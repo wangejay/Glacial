@@ -1,4 +1,3 @@
-
 #include <IRremote.h>                    // 引用 IRRemote 函式庫
 #include <MeetAndroid.h>
 // declare MeetAndroid so that you can call functions with it
@@ -6,7 +5,7 @@ MeetAndroid meetAndroid;
 const int buttonPin = 4;                 // 按鍵(pushbutton)接在 pin 4
 int buttonState = 0;                     // 按鍵狀態
 
-//LED
+//define LED number. 
 int led_green = 13;
 int led_red   = 12;
 int led_yellow = 11;
