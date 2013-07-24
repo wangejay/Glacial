@@ -1,101 +1,39 @@
-#include <IRremote.h>                    // 引用 IRRemote 函式庫
 #include <MeetAndroid.h>
-// declare MeetAndroid so that you can call functions with it
 MeetAndroid meetAndroid;
+
 const int buttonPin = 4;                 // 按鍵(pushbutton)接在 pin 4
 int buttonState = 0;                     // 按鍵狀態
 
-//define LED number. 
-int led_green = 13;
-int led_red   = 12;
-int led_yellow = 9;
-int ledPin_PWM = 11; 
-//Others
-
-
-IRsend irsend;                           // 定義 IRsend 物件來發射紅外線訊號
-
-// Sony IrDA Code
-unsigned long Num1      =0x010;
-unsigned long Num2      =0x810;
-unsigned long Num3      =0x410;
-unsigned long Num4      =0xC10;
-unsigned long Num5      =0x210;
-unsigned long Num6      =0xA10;
-unsigned long Num7      =0x610;
-unsigned long Num8      =0xE10;
-unsigned long Num9      =0x110;
-unsigned long Num0      =0x910;
-unsigned long Red       =0x338;
-unsigned long Green     =0xB38;
-unsigned long Yelloy    =0x738;
-unsigned long Blue      =0xF38;
-unsigned long Up        =0x2F0;
-unsigned long Down      =0xAF0;
-unsigned long Left      =0x2D0;
-unsigned long right     =0xCD0;
-unsigned long Ok        =0xA70;
-unsigned long Menu      =0x070;
-unsigned long Vol_up    =0x490;
-unsigned long Vol_down  =0xC90;
-unsigned long Mute      =0x290;
-unsigned long Prog_up   =0x090;
-unsigned long Prog_down =0x890;
-unsigned long Power     =0xA90;
-unsigned long Input_sel =0xA50;
-unsigned long Sel_enter =0xA70;
-unsigned long Sel_up    =0x2F0;
-unsigned long Sel_down  =0xAF0;
-unsigned long Sel_right =0xCD0;
-unsigned long Sel_left  =0x2D0;
-
-// MOD IrDA Code
-unsigned long M_Num1      =0x7D7D847B;
-unsigned long M_Num2      =0x7D7D44BB;
-unsigned long M_Num3      =0x7D7DC43B;
-unsigned long M_Num4      =0xC10;
-unsigned long M_Num5      =0x210;
-unsigned long M_Num6      =0xA10;
-unsigned long M_Num7      =0x610;
-unsigned long M_Num8      =0xE10;
-unsigned long M_Num9      =0x110;
-unsigned long M_Num0      =0x910;
-unsigned long M_Red       =0x338;
-unsigned long M_Green     =0xB38;
-unsigned long M_Yelloy    =0x738;
-unsigned long M_Blue      =0xF38;
-unsigned long M_Up        =0x2F0;
-unsigned long M_Down      =0xAF0;
-unsigned long M_Left      =0x2D0;
-unsigned long M_right     =0xCD0;
-unsigned long M_Ok        =0x7D7DFE01;
-unsigned long M_Menu      =0x070;
-unsigned long M_Vol_up    =0x7D7D6C93;
-unsigned long M_Vol_down  =0x7D7DEC13;
-unsigned long M_Mute      =0x290;
-unsigned long M_Prog_up   =0x7D7DDE21;
-unsigned long M_Prog_down =0x7D7D3EC1;
-unsigned long M_Power     =0x7D7D0EF1;
-
+//define pin number. 
+int pin08 = 8;
+int pin09 = 9;
+int pin10 = 10;
+int pin11 = 11; 
+int pin12 = 12; 
 
 void setup()
 {
-  pinMode(buttonPin, INPUT);     // 把 buttonPin 設置成 INPUT
-  pinMode(led_green, OUTPUT);
-  pinMode(led_red, OUTPUT);
-  pinMode(led_yellow, OUTPUT);
-  
+  pinMode(pin08, OUTPUT);     
+  pinMode(pin09, OUTPUT);
+  pinMode(pin10, OUTPUT);
+  pinMode(pin11, OUTPUT);
+  pinMode(pin12, OUTPUT);
+ 
   Serial.begin(9600); 
+
   // register callback functions, which will be called when an associated event occurs.
-  meetAndroid.registerFunction(power, 'A');
-  meetAndroid.registerFunction(vol_up, 'B');  
-  meetAndroid.registerFunction(vol_down, 'C');   
+  //meetAndroid.registerFunction(power, 'A');
+  //meetAndroid.registerFunction(vol_up, 'B');  
+  //meetAndroid.registerFunction(vol_down, 'C');   
   meetAndroid.registerFunction(up, 'D');
   meetAndroid.registerFunction(down, 'E');  
   meetAndroid.registerFunction(input_sel, 'F');  
   meetAndroid.registerFunction(sel_enter, 'G');  
-  meetAndroid.registerFunction(sel_up, 'H');  
-  meetAndroid.registerFunction(sel_down, 'I');  
+  meetAndroid.registerFunction(pin08_action, 'H');  
+  meetAndroid.registerFunction(pin09_action, 'I');
+  meetAndroid.registerFunction(pin10_action, 'J');
+  meetAndroid.registerFunction(pin11_action, 'K');
+  meetAndroid.registerFunction(pin12_action, 'L');
   meetAndroid.registerFunction(led1, 'X');  
   meetAndroid.registerFunction(led2, 'Y');  
   meetAndroid.registerFunction(led3, 'Z');  
@@ -120,34 +58,34 @@ void loop()
   // 有的話，buttonState 會是 HIGH
   
    // fade in from min to max in increments of 5 points:
-  for(int fadeValue = 0 ; fadeValue <= 255; fadeValue +=2) { 
+  for(int fadeValue = 0 ; fadeValue <= 255; fadeValue +=5) { 
     // sets the value (range from 0 to 255):
     analogWrite(ledPin_PWM, fadeValue);         
     // wait for 30 milliseconds to see the dimming effect    
     delay(30);                            
   } 
-   delay(300);
+
   // fade out from max to min in increments of 5 points:
-  for(int fadeValue = 255 ; fadeValue >= 0; fadeValue -=2) { 
+  for(int fadeValue = 255 ; fadeValue >= 0; fadeValue -=5) { 
     // sets the value (range from 0 to 255):
     analogWrite(ledPin_PWM, fadeValue);         
     // wait for 30 milliseconds to see the dimming effect    
     delay(30);                            
   } 
-  delay(300);
-  //if (buttonState == HIGH) {    
+  
+  if (buttonState == HIGH) {    
     // 發射紅外線訊號
 
- //   for (int i = 0; i < 3; i++) {
- //     irsend.sendSony(Power, 12); // Sony TV power code
- //     delay(45);
- //   }
- //   irsend.sendNEC(0x7D7D0EF1, 32);   // MOD Power
- //   irsend.sendNEC(0xFFFFFFFF, 32);   // MOD Power
- //   led1(0,0);
- //   led2(0,0); 
- //   delay(1000);
-//  }
+    for (int i = 0; i < 3; i++) {
+      irsend.sendSony(Power, 12); // Sony TV power code
+      delay(45);
+    }
+    irsend.sendNEC(0x7D7D0EF1, 32);   // MOD Power
+    irsend.sendNEC(0xFFFFFFFF, 32);   // MOD Power
+    led1(0,0);
+    led2(0,0); 
+    delay(1000);
+  }
 }
 
 void power(byte flag, byte numOfValues)
